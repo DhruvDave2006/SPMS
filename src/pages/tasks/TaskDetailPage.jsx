@@ -6,6 +6,7 @@ import { ArrowLeft, Calendar, Pencil, MessageSquare, Star } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { taskService } from '../../services/taskService';
 import { statusService } from '../../services/statusService';
+import { projectService } from '../../services/projectService';
 import Badge from '../../components/common/Badge';
 import ProgressBar from '../../components/common/ProgressBar';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
@@ -14,7 +15,7 @@ import TaskForm from '../../components/forms/TaskForm';
 
 export default function TaskDetailPage() {
   const { projectId, id } = useParams();
-  const { role } = useAuth();
+  const { role, user } = useAuth();
   const [task, setTask]         = useState(null);
   const [statuses, setStatuses] = useState([]);
   const [loading, setLoading]   = useState(true);
@@ -28,11 +29,19 @@ export default function TaskDetailPage() {
       statusService.getAll(),
     ]);
     if (t) {
-      const { mockStatuses, mockPriorities } = await import('../../data/mockData.js');
-      t.Status   = mockStatuses.find(s => s.StatusID === t.TaskStatus);
-      t.Priority = mockPriorities.find(p => p.PriorityID === t.PriorityID);
+      const proj = await projectService.getById(t.AllocationID);
+      if ((role === 'Student' && proj && proj.StudentId !== user?.UserId) ||
+          (role === 'Faculty' && proj && proj.FacultyId !== user?.UserId)) {
+        setTask(null);
+      } else {
+        const { mockStatuses, mockPriorities } = await import('../../data/mockData.js');
+        t.Status   = mockStatuses.find(s => s.StatusID === t.TaskStatus);
+        t.Priority = mockPriorities.find(p => p.PriorityID === t.PriorityID);
+        setTask(t);
+      }
+    } else {
+      setTask(null);
     }
-    setTask(t);
     setStatuses(s);
     setLoading(false);
   };
@@ -41,6 +50,15 @@ export default function TaskDetailPage() {
   const handleSave = async (data) => {
     setSaving(true);
     try {
+      if (role === 'Student' || role === 'Faculty') {
+        const proj = await projectService.getById(task.AllocationID);
+        if (!proj || 
+            (role === 'Student' && proj.StudentId !== user?.UserId) ||
+            (role === 'Faculty' && proj.FacultyId !== user?.UserId)) {
+          toast.error("Unauthorized: You do not own/supervise this project.");
+          return;
+        }
+      }
       await taskService.update(Number(id), data);
       toast.success('Task updated');
       setEditOpen(false);
@@ -55,6 +73,15 @@ export default function TaskDetailPage() {
   const handleStatusChange = async (e) => {
     const newStatus = Number(e.target.value);
     try {
+      if (role === 'Student' || role === 'Faculty') {
+        const proj = await projectService.getById(task.AllocationID);
+        if (!proj || 
+            (role === 'Student' && proj.StudentId !== user?.UserId) ||
+            (role === 'Faculty' && proj.FacultyId !== user?.UserId)) {
+          toast.error("Unauthorized: You do not own/supervise this project.");
+          return;
+        }
+      }
       await taskService.updateStatus(Number(id), newStatus);
       toast.success('Status updated');
       load();

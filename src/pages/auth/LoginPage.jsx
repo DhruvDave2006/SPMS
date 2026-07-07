@@ -42,8 +42,8 @@ function Scene3D() {
 // Preset credentials for quick demo
 const DEMO_CREDS = [
   { label: 'Admin', email: 'admin@spms.edu', password: 'Admin@123', color: 'text-brass-400' },
-  { label: 'Faculty', email: 'nvoss@spms.edu', password: 'Faculty@123', color: 'text-teal-400' },
-  { label: 'Student', email: 'lcalloway@student.spms.edu', password: 'Student@123', color: 'text-sage-500' },
+  { label: 'Faculty', email: 'jasminkpt@spms.edu', password: 'Faculty@123', color: 'text-teal-400' },
+  { label: 'Student', email: 'aarav@student.spms.edu', password: 'Student@123', color: 'text-sage-500' },
 ];
 
 export default function LoginPage() {

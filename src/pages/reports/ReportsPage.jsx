@@ -10,6 +10,7 @@ import { userService } from '../../services/userService';
 import { mockUserRoles, mockRoles } from '../../data/mockData';
 import ProgressBar from '../../components/common/ProgressBar';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { useAuth } from '../../context/AuthContext';
 
 const COLORS = ['#B8943F', '#0D9488', '#6B9C78', '#B45309', '#D97706'];
 
@@ -31,6 +32,7 @@ function exportCSV(data, filename) {
 }
 
 export default function ReportsPage() {
+  const { role, user } = useAuth();
   const [projects, setProjects] = useState([]);
   const [tasks, setTasks]       = useState([]);
   const [users, setUsers]       = useState([]);
@@ -42,9 +44,21 @@ export default function ReportsPage() {
       taskService.getAll(),
       userService.getAll(),
     ]).then(([p, t, u]) => {
-      setProjects(p); setTasks(t); setUsers(u);
+      if (role === 'Faculty') {
+        const myProjects = p.filter(proj => proj.FacultyId === user?.UserId);
+        const myProjectIds = myProjects.map(proj => proj.ProjectId);
+        const myStudentIds = myProjects.map(proj => proj.StudentId);
+        
+        setProjects(myProjects);
+        setTasks(t.filter(task => myProjectIds.includes(task.AllocationID)));
+        setUsers(u.filter(usr => usr.UserId === user?.UserId || myStudentIds.includes(usr.UserId)));
+      } else {
+        setProjects(p);
+        setTasks(t);
+        setUsers(u);
+      }
     }).finally(() => setLoading(false));
-  }, []);
+  }, [role, user]);
 
   if (loading) return <LoadingSpinner />;
 

@@ -56,4 +56,32 @@ export const userService = {
     }
     return apiDelete(`/users/${id}`);
   },
+
+  changePassword: async (id, currentPassword, newPassword) => {
+    if (USE_MOCK) {
+      const user = userStore.find(u => u.UserId === id && !u.IsDeleted);
+      if (!user) throw new Error('User not found.');
+      const passwords = JSON.parse(localStorage.getItem('spms_passwords') || '{}');
+      const defaultPasswords = {
+        'admin@spms.edu': 'Admin@123',
+        'rajtanna@spms.edu': 'Faculty@123',
+        'jasminkpt@spms.edu': 'Faculty@123',
+        'dhruvdave@spms.edu': 'Faculty@123',
+        'aarav@student.spms.edu': 'Student@123',
+        'psharma@student.spms.edu': 'Student@123',
+        'tpandya@student.spms.edu': 'Student@123',
+        'yj@student.spms.edu': 'Student@123',
+        'davend@student.spms.edu': 'Student@123',
+        'asingh@student.spms.edu': 'Student@123',
+      };
+      const expectedPassword = passwords[user.Email] || defaultPasswords[user.Email] || 'Password@123';
+      if (currentPassword !== expectedPassword) {
+        throw new Error('Current password is incorrect.');
+      }
+      passwords[user.Email] = newPassword;
+      localStorage.setItem('spms_passwords', JSON.stringify(passwords));
+      return { success: true };
+    }
+    return apiPut(`/users/${id}/change-password`, { currentPassword, newPassword });
+  },
 };

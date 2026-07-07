@@ -15,7 +15,7 @@ import ProgressBar from '../../components/common/ProgressBar';
 
 export default function TaskListPage() {
   const { projectId } = useParams();
-  const { role } = useAuth();
+  const { role, user } = useAuth();
   const [tasks, setTasks]           = useState([]);
   const [project, setProject]       = useState(null);
   const [loading, setLoading]       = useState(true);
@@ -31,8 +31,14 @@ export default function TaskListPage() {
       taskService.getByProjectEnriched(Number(projectId)),
       projectService.getAllEnriched().then(list => list.find(pr => pr.ProjectId === Number(projectId))),
     ]);
-    setTasks(t);
-    setProject(p || null);
+    if ((role === 'Student' && p && p.StudentId !== user?.UserId) ||
+        (role === 'Faculty' && p && p.FacultyId !== user?.UserId)) {
+      setTasks([]);
+      setProject(null);
+    } else {
+      setTasks(t);
+      setProject(p || null);
+    }
     setLoading(false);
   };
   useEffect(() => { load(); }, [projectId]);
@@ -43,6 +49,15 @@ export default function TaskListPage() {
   const handleSave = async (data) => {
     setSaving(true);
     try {
+      if (role === 'Student' || role === 'Faculty') {
+        const proj = await projectService.getById(Number(projectId));
+        if (!proj || 
+            (role === 'Student' && proj.StudentId !== user?.UserId) ||
+            (role === 'Faculty' && proj.FacultyId !== user?.UserId)) {
+          toast.error("Unauthorized: You do not own/supervise this project.");
+          return;
+        }
+      }
       if (editTarget) {
         await taskService.update(editTarget.TaskId, data);
         toast.success('Task updated');

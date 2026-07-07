@@ -30,27 +30,27 @@ export const mockPriorities = [
 // ── Users ──────────────────────────────────────────────────
 export const mockUsers = [
   {
-    UserId: 1, FullName: 'Alexandra Mercer', Email: 'admin@spms.edu',
+    UserId: 1, FullName: 'Rohit Agrawal', Email: 'admin@spms.edu',
     Password: 'hashed', MobileNumber: '9876543210',
     ProfilePicturePath: null, IsActive: true, IsDeleted: false,
   },
   {
-    UserId: 2, FullName: 'Dr. Nathaniel Voss', Email: 'nvoss@spms.edu',
+    UserId: 2, FullName: 'Dr. Raj Tanna', Email: 'rajtanna@spms.edu',
     Password: 'hashed', MobileNumber: '9123456780',
     ProfilePicturePath: null, IsActive: true, IsDeleted: false,
   },
   {
-    UserId: 3, FullName: 'Prof. Elara Sinclair', Email: 'esinclair@spms.edu',
+    UserId: 3, FullName: 'Prof. Jasmin Patel', Email: 'jasminkpt@spms.edu',
     Password: 'hashed', MobileNumber: '9023456781',
     ProfilePicturePath: null, IsActive: true, IsDeleted: false,
   },
   {
-    UserId: 4, FullName: 'Dr. Rowan Ashford', Email: 'rashford@spms.edu',
+    UserId: 4, FullName: 'Dr. Dhruv Dave', Email: 'dhruvdave@spms.edu',
     Password: 'hashed', MobileNumber: '9034567890',
     ProfilePicturePath: null, IsActive: true, IsDeleted: false,
   },
   {
-    UserId: 5, FullName: 'Liam Calloway', Email: 'lcalloway@student.spms.edu',
+    UserId: 5, FullName: 'Aarav Patel', Email: 'aarav@student.spms.edu',
     Password: 'hashed', MobileNumber: '8123456789',
     ProfilePicturePath: null, IsActive: true, IsDeleted: false,
   },
@@ -60,22 +60,22 @@ export const mockUsers = [
     ProfilePicturePath: null, IsActive: true, IsDeleted: false,
   },
   {
-    UserId: 7, FullName: 'Marcus Osei', Email: 'mosei@student.spms.edu',
+    UserId: 7, FullName: 'Tanishq Pandya', Email: 'tpandya@student.spms.edu',
     Password: 'hashed', MobileNumber: '8345678901',
     ProfilePicturePath: null, IsActive: true, IsDeleted: false,
   },
   {
-    UserId: 8, FullName: 'Yuna Park', Email: 'ypark@student.spms.edu',
+    UserId: 8, FullName: 'Yuvraj Jadeja', Email: 'yj@student.spms.edu',
     Password: 'hashed', MobileNumber: '8456789012',
     ProfilePicturePath: null, IsActive: true, IsDeleted: false,
   },
   {
-    UserId: 9, FullName: 'Felix Bergmann', Email: 'fbergmann@student.spms.edu',
+    UserId: 9, FullName: 'Nandani Dave', Email: 'davend@student.spms.edu',
     Password: 'hashed', MobileNumber: '8567890123',
     ProfilePicturePath: null, IsActive: true, IsDeleted: false,
   },
   {
-    UserId: 10, FullName: 'Amara Okonkwo', Email: 'aokonkwo@student.spms.edu',
+    UserId: 10, FullName: 'Anika Singh', Email: 'asingh@student.spms.edu',
     Password: 'hashed', MobileNumber: '8678901234',
     ProfilePicturePath: null, IsActive: false, IsDeleted: false,
   },
@@ -83,16 +83,16 @@ export const mockUsers = [
 
 // ── UserRoles ──────────────────────────────────────────────
 export const mockUserRoles = [
-  { RolePermissionId: 1, RoleId: 1, UserId: 1 },  // Alexandra → Admin
-  { RolePermissionId: 2, RoleId: 2, UserId: 2 },  // Nathaniel → Faculty
-  { RolePermissionId: 3, RoleId: 2, UserId: 3 },  // Elara → Faculty
-  { RolePermissionId: 4, RoleId: 2, UserId: 4 },  // Rowan → Faculty
-  { RolePermissionId: 5, RoleId: 3, UserId: 5 },  // Liam → Student
+  { RolePermissionId: 1, RoleId: 1, UserId: 1 },  // Rohit → Admin
+  { RolePermissionId: 2, RoleId: 2, UserId: 2 },  // Raj → Faculty
+  { RolePermissionId: 3, RoleId: 2, UserId: 3 },  // Jasmin → Faculty
+  { RolePermissionId: 4, RoleId: 2, UserId: 4 },  // Dhruv → Faculty
+  { RolePermissionId: 5, RoleId: 3, UserId: 5 },  // Aarav → Student
   { RolePermissionId: 6, RoleId: 3, UserId: 6 },  // Priya → Student
-  { RolePermissionId: 7, RoleId: 3, UserId: 7 },  // Marcus → Student
-  { RolePermissionId: 8, RoleId: 3, UserId: 8 },  // Yuna → Student
-  { RolePermissionId: 9, RoleId: 3, UserId: 9 },  // Felix → Student
-  { RolePermissionId: 10, RoleId: 3, UserId: 10 }, // Amara → Student
+  { RolePermissionId: 7, RoleId: 3, UserId: 7 },  // Tanishq → Student
+  { RolePermissionId: 8, RoleId: 3, UserId: 8 },  // Yuvraj → Student
+  { RolePermissionId: 9, RoleId: 3, UserId: 9 },  // Nandani → Student
+  { RolePermissionId: 10, RoleId: 3, UserId: 10 }, // Anika → Student
 ];
 
 // ── Projects ───────────────────────────────────────────────

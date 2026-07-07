@@ -14,7 +14,7 @@ import toast from 'react-hot-toast';
 
 export default function ProjectDetailPage() {
   const { id } = useParams();
-  const { role } = useAuth();
+  const { role, user } = useAuth();
   const [project, setProject] = useState(null);
   const [tasks, setTasks]     = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,8 +27,14 @@ export default function ProjectDetailPage() {
       projectService.getAllEnriched().then(list => list.find(pr => pr.ProjectId === Number(id))),
       taskService.getByProjectEnriched(Number(id)),
     ]);
-    setProject(p || null);
-    setTasks(t);
+    if ((role === 'Student' && p && p.StudentId !== user?.UserId) ||
+        (role === 'Faculty' && p && p.FacultyId !== user?.UserId)) {
+      setProject(null);
+      setTasks([]);
+    } else {
+      setProject(p || null);
+      setTasks(t);
+    }
     setLoading(false);
   };
   useEffect(() => { load(); }, [id]);
@@ -68,7 +74,7 @@ export default function ProjectDetailPage() {
           className="inline-flex items-center gap-1.5 text-sm transition-colors hover:text-brass-400"
           style={{ color: 'var(--text-muted)' }}
         >
-          <ArrowLeft size={15} /> All Projects
+          <ArrowLeft size={15} /> {role === 'Student' ? 'My Projects' : role === 'Faculty' ? 'Supervised Projects' : 'All Projects'}
         </Link>
         {canManage && (
           <button onClick={() => setEditOpen(true)} className="btn-secondary">

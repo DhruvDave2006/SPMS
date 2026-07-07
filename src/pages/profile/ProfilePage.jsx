@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { Camera, Save, User, Mail, Phone, Shield } from 'lucide-react';
+import { Camera, Save, User, Mail, Phone, Shield, Key, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { userService } from '../../services/userService';
 
@@ -10,6 +10,9 @@ export default function ProfilePage() {
   const { user, role, updateProfile } = useAuth();
   const [previewUrl, setPreviewUrl] = useState(user?.ProfilePicturePath || null);
   const [saving, setSaving]         = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const fileRef = useRef();
 
   const { register, handleSubmit, formState: { errors, isDirty } } = useForm({
@@ -19,6 +22,22 @@ export default function ProfilePage() {
       MobileNumber: user?.MobileNumber || '',
     },
   });
+
+  const {
+    register: registerPassword,
+    handleSubmit: handlePasswordSubmit,
+    reset: resetPassword,
+    watch: watchPassword,
+    formState: { errors: passwordErrors }
+  } = useForm({
+    defaultValues: {
+      CurrentPassword: '',
+      NewPassword: '',
+      ConfirmPassword: '',
+    }
+  });
+
+  const watchNewPassword = watchPassword('NewPassword');
 
   const handlePhoto = (e) => {
     const file = e.target.files?.[0];
@@ -37,6 +56,19 @@ export default function ProfilePage() {
       toast.error(err.message);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const onPasswordSubmit = async (data) => {
+    setChangingPassword(true);
+    try {
+      await userService.changePassword(user.UserId, data.CurrentPassword, data.NewPassword);
+      toast.success('Password updated successfully!');
+      resetPassword();
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setChangingPassword(false);
     }
   };
 
@@ -136,6 +168,85 @@ export default function ProfilePage() {
             <button type="submit" className="btn-primary" disabled={saving || !isDirty}>
               <Save size={15} />
               {saving ? 'Saving…' : 'Save Changes'}
+            </button>
+          </div>
+        </form>
+      </motion.div>
+
+      {/* Change Password card */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="glass-card p-6 mb-6"
+      >
+        <h3 className="font-display text-base font-semibold text-white mb-4 flex items-center gap-2">
+          <Key size={18} className="text-brass-400" /> Change Password
+        </h3>
+        <form onSubmit={handlePasswordSubmit(onPasswordSubmit)} className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className="form-label">Current Password *</label>
+              <input
+                {...registerPassword('CurrentPassword', { required: 'Current password is required' })}
+                type="password"
+                className={`form-input ${passwordErrors.CurrentPassword ? 'error' : ''}`}
+                placeholder="••••••••"
+              />
+              {passwordErrors.CurrentPassword && <p className="text-xs text-brick-400 mt-1">{passwordErrors.CurrentPassword.message}</p>}
+            </div>
+
+            <div>
+              <label className="form-label">New Password *</label>
+              <div className="relative">
+                <input
+                  {...registerPassword('NewPassword', {
+                    required: 'New password is required',
+                    minLength: { value: 6, message: 'Min 6 characters' },
+                  })}
+                  type={showNewPassword ? 'text' : 'password'}
+                  className={`form-input pr-10 ${passwordErrors.NewPassword ? 'error' : ''}`}
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-navy-400 hover:text-white transition-colors"
+                >
+                  {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+              {passwordErrors.NewPassword && <p className="text-xs text-brick-400 mt-1">{passwordErrors.NewPassword.message}</p>}
+            </div>
+
+            <div>
+              <label className="form-label">Confirm New Password *</label>
+              <div className="relative">
+                <input
+                  {...registerPassword('ConfirmPassword', {
+                    required: 'Please confirm new password',
+                    validate: value => value === watchNewPassword || 'Passwords do not match',
+                  })}
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  className={`form-input pr-10 ${passwordErrors.ConfirmPassword ? 'error' : ''}`}
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-navy-400 hover:text-white transition-colors"
+                >
+                  {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+              {passwordErrors.ConfirmPassword && <p className="text-xs text-brick-400 mt-1">{passwordErrors.ConfirmPassword.message}</p>}
+            </div>
+          </div>
+
+          <div className="flex justify-end pt-2">
+            <button type="submit" className="btn-primary" disabled={changingPassword}>
+              <Key size={15} />
+              {changingPassword ? 'Updating…' : 'Update Password'}
             </button>
           </div>
         </form>

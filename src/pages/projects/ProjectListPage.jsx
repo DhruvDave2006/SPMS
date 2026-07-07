@@ -14,7 +14,7 @@ import Badge from '../../components/common/Badge';
 import ProgressBar from '../../components/common/ProgressBar';
 
 export default function ProjectListPage() {
-  const { role } = useAuth();
+  const { role, user } = useAuth();
   const [projects, setProjects]   = useState([]);
   const [statuses, setStatuses]   = useState([]);
   const [loading, setLoading]     = useState(true);
@@ -26,7 +26,12 @@ export default function ProjectListPage() {
 
   const load = async () => {
     setLoading(true);
-    const [p, s] = await Promise.all([projectService.getAllEnriched(), statusService.getAll()]);
+    let [p, s] = await Promise.all([projectService.getAllEnriched(), statusService.getAll()]);
+    if (role === 'Student') {
+      p = p.filter(proj => proj.StudentId === user?.UserId);
+    } else if (role === 'Faculty') {
+      p = p.filter(proj => proj.FacultyId === user?.UserId);
+    }
     setProjects(p); setStatuses(s); setLoading(false);
   };
   useEffect(() => { load(); }, []);
@@ -98,7 +103,7 @@ export default function ProjectListPage() {
             <FolderKanban size={24} className="text-brass-400" /> Projects
           </h1>
           <p className="mt-1 text-sm" style={{ color: 'var(--text-muted)' }}>
-            {role === 'Student' ? 'Your assigned projects' : 'All academic projects'}
+            {role === 'Student' ? 'Your assigned projects' : role === 'Faculty' ? 'Your supervised projects' : 'All academic projects'}
           </p>
         </div>
         {canManage && (
